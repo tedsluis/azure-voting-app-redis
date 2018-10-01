@@ -1,16 +1,50 @@
 version: '3'
 services:
-  azure-vote-back:
+  vote-back:
     image: redis
-    container_name: azure-vote-back
+    container_name: vote-back
     ports:
         - "6379:6379"
 
-  azure-vote-front:
-    build: ./azure-vote
-    image: azure-vote-front
-    container_name: azure-vote-front
+  vote-reset-front:
+    build: ./vote-reset
+    image: vote-reset-front
+    container_name: vote-reset-front
     environment:
-      REDIS: azure-vote-back
+      REDIS: vote-back
+      TITLE: 'Reset Voting App'
+      VOTE1VALUE: 'Beer'
+      VOTE2VALUE: 'Wine'
+      SHOWHOST: 'true'
     ports:
         - "8080:80"
+  
+  vote-front:
+    build: ./vote
+    image: vote-front
+    container_name: vote-front
+    environment:
+      REDIS: vote-back
+      TITLE: 'Voting App'
+      VOTE1VALUE: 'Beer'
+      VOTE2VALUE: 'Wine'
+      SHOWHOST: 'true'
+    ports:
+        - "8090:80"
+  
+  vote-multi-front:
+    build: ./vote-multi
+    image: vote-multi-front
+    container_name: vote-multi-front
+    environment:
+      REDIS: vote-back
+      TITLE: 'Multi Voting App'
+      VOTE1VALUE: '1'
+      VOTE2VALUE: '2'
+      VOTE3VALUE: '3'
+      VOTE4VALUE: '4'
+      VOTE5VALUE: '5'
+      RESET: 'true'
+      SHOWHOST: 'true'
+    ports:
+        - "8070:80"

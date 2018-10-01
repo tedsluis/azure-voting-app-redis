@@ -1,21 +1,91 @@
-# Azure Voting App
+# Voting App
 
-This sample creates a multi-container application in an Azure Kubernetes Service (AKS) cluster. The application interface has been built using Python / Flask. The data component is using Redis.
+This sample creates 3 variants of a multi-container application for a Kubernetes cluster. The application interface has been built using Python / Flask. The data component is using Redis.
 
-To walk through a quick deployment of this application, see the AKS [quick start](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough).
+## App variants
 
-To walk through a complete experience where this code is packaged into container images, uploaded to Azure Container Registry, and then run in and AKS cluster, see the [AKS tutorials](https://docs.microsoft.com/en-us/azure/aks/tutorial-kubernetes-prepare-app).
+|App variant |image name               | number of buttons | directory   | image port & path | docker-compose port & path |
+---------------------------------------------------------------------------------------------------------------------------
+| Vote       |tedsluis/vote-front      | 2                 | vote/       | :8090/vote        | :80/vote                   |
+| Reset      |tedsluis/vote-reset-front| 3                 | vote-reset/ | :8090/reset       | :80/reset                  |
+| Multi      |tedsluis/vote-multi-front| 0-5               | vote-multi/ | :8070/multi       | :80/multi                  |
+ 
+## Steps
 
-## Contributing
+* Build images
+* Run images locally and test apps
+* Push images to a container registry
+* Deploy apps on Kubernetes
 
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit https://cla.microsoft.com.
+## Build images
+  
+This step is opional. If you just want to deploy the apps on Kubernetes, you can use my images that I pushed to Docker Hub.  
+  
+Prerequisites:
+* Linux host with Docker & Docker compose installed
+* Internet connectivity (including access to Docker Hub)
+* Clone this repo  
+  
+To build images locally and start containers via Docker-compose:
+```
+$ ./rebuild.sh
+Stopping vote-reset-front ... done
+Stopping vote-multi-front ... done
+Stopping vote-back        ... done
+Stopping vote-front       ... done
+Removing vote-reset-front ... done
+Removing vote-multi-front ... done
+Removing vote-back        ... done
+Removing vote-front       ... done
+Removing network voting-app-redis_default
+vote-back uses an image, skipping
+Building vote-reset-front
+Building vote-front
+Building vote-multi-front
+Creating network "voting-app-redis_default" with the default driver
+Creating vote-front       ... done
+Creating vote-back        ... done
+Creating vote-reset-front ... done
+Creating vote-multi-front ... done
 
-When you submit a pull request, a CLA-bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., label, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
+$ sudo docker ps
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                           NAMES
+15141632acd5        vote-reset-front    "/entrypoint.sh /s..."   21 minutes ago      Up 21 minutes       443/tcp, 0.0.0.0:8080->80/tcp   vote-reset-front
+3fe74152db35        vote-multi-front    "/entrypoint.sh /s..."   21 minutes ago      Up 21 minutes       443/tcp, 0.0.0.0:8070->80/tcp   vote-multi-front
+7dd299d01506        vote-front          "/entrypoint.sh /s..."   21 minutes ago      Up 21 minutes       443/tcp, 0.0.0.0:8090->80/tcp   vote-front
+e260a14b9064        redis               "docker-entrypoint..."   21 minutes ago      Up 21 minutes       0.0.0.0:6379->6379/tcp          vote-back
+```
+The apps will be started after a successfull build.
+  
+## Test the apps locally
+  
+Try the URLs below in a webbrowser on the same system:
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+* http://localhost:8070/multi
+* http://localhost:8080/reset
+* http://localhost:8090/vote
+
+Or use curl http://\<url\> from the commandline. 
+  
+## Tag and push the images to a container registry (Docker Hub or ACR)
+  
+Login to your container registry, for example to Docker hub:
+```
+$ docker login --username tedsluis --password <password>
+```
+  
+To tag and push images:  
+(be sure edit the namespace tag in the *tag_and_push.sh* script!)   
+```
+$ ./tag_and_push.sh 
+The push refers to a repository [docker.io/tedsluis/vote-front]
+The push refers to a repository [docker.io/tedsluis/vote-reset-front]
+The push refers to a repository [docker.io/tedsluis/vote-multi-front]
+
+$ sudo docker images | grep vote | grep v1
+tedsluis/vote-multi-front              v1                  70d73e55bc1a        19 minutes ago      945 MB
+tedsluis/vote-front                    v1                  a6b8787e7904        About an hour ago   945 MB
+tedsluis/vote-reset-front              v1                  a6b8787e7904        About an hour ago   945 MB
+```
+
+

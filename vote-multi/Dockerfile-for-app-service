@@ -13,10 +13,19 @@ RUN  pip install redis
 
 EXPOSE 2222 80
  
-ADD     /azure-vote /app
+ADD     /vote-multi /app
+
+RUN     chmod 777 -R /app  || echo "0" \
+        chmod 777 -R /home || echo "0" \
+        chmod 777 -R /opt  || echo "0" \
+        chmod 777 -R /var  || echo "0" \
+        chmod 777 -R /usr  || echo "0" \
+        chmod 777 -R /etc  || echo "0"
 
 ENV PORT 80
 ENV PATH ${PATH}:/home/site/wwwroot
+
+USER uwsgi
 
 # Supervisor will call into /opt/startup/init_container.sh
 # Also see: http://blog.trifork.com/2014/03/11/using-supervisor-with-docker-to-manage-processes-supporting-image-inheritance/
