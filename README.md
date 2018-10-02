@@ -3,20 +3,21 @@
 This sample creates 3 variants of a multi-container application for a Kubernetes cluster. The application interface has been built using Python / Flask. The data component is using Redis.
 
 ## App variants
-
+  
 |App variant |image name               | number of buttons | directory   | image port & path | docker-compose port & path |
 ---------------------------------------------------------------------------------------------------------------------------
 | Vote       |tedsluis/vote-front      | 2                 | vote/       | :8090/vote        | :80/vote                   |
 | Reset      |tedsluis/vote-reset-front| 3                 | vote-reset/ | :8090/reset       | :80/reset                  |
 | Multi      |tedsluis/vote-multi-front| 0-5               | vote-multi/ | :8070/multi       | :80/multi                  |
  
+
 ## Steps
 
-* Build images
-* Run images locally and test apps
+* Build images using docker-compose
+* Run images locally using docker-compose and test apps
 * Push images to a container registry
 * Deploy apps on Kubernetes
-
+  
 ## Build images
   
 This step is opional. If you just want to deploy the apps on Kubernetes, you can use my images that I pushed to Docker Hub.  
@@ -47,7 +48,7 @@ Creating vote-front       ... done
 Creating vote-back        ... done
 Creating vote-reset-front ... done
 Creating vote-multi-front ... done
-
+  
 $ sudo docker ps
 CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                           NAMES
 15141632acd5        vote-reset-front    "/entrypoint.sh /s..."   21 minutes ago      Up 21 minutes       443/tcp, 0.0.0.0:8080->80/tcp   vote-reset-front
@@ -60,11 +61,11 @@ The apps will be started after a successfull build.
 ## Test the apps locally
   
 Try the URLs below in a webbrowser on the same system:
-
+  
 * http://localhost:8070/multi
 * http://localhost:8080/reset
 * http://localhost:8090/vote
-
+  
 Or use curl http://\<url\> from the commandline. 
   
 ## Tag and push the images to a container registry (Docker Hub or ACR)
