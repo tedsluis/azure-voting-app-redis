@@ -5,7 +5,7 @@ This sample creates 3 variants of a multi-container application for a Kubernetes
 ## App variants
   
 |App variant |image name               | number of buttons | directory   | image port & path | docker-compose port & path |
----------------------------------------------------------------------------------------------------------------------------
+|--------------------------------------|-------------------|-------------|-------------------|----------------------------|
 | Vote       |tedsluis/vote-front      | 2                 | vote/       | :8090/vote        | :80/vote                   |
 | Reset      |tedsluis/vote-reset-front| 3                 | vote-reset/ | :8090/reset       | :80/reset                  |
 | Multi      |tedsluis/vote-multi-front| 0-5               | vote-multi/ | :8070/multi       | :80/multi                  |
