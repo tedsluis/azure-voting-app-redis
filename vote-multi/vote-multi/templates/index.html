@@ -4,13 +4,24 @@
     <link rel="stylesheet" type="text/css" href="/multi{{ url_for('static', filename='default.css') }}">
     <title>{{title}} {{subtitle}}</title>
     <script language="JavaScript">
-	setTimeout(function(){
-    	location = ''
-  	},1000)
-        function send(form){
-	}
+    	var asdf = false;
+      	function StartTime(){
+        if(asdf)clearTimeout(asdf)
+        	asdf = setTimeout("RefreshPage()",1000);
+      	}
+      	function RefreshPage(){
+		clearTimeout(asdf)
+        	if(document.form.CB1.checked)
+          		document.location.href= "multi?autorefresh"
+      	}
+      	function LoadPage(){
+        	var findCheck = document.location.href.split("?auto");
+        	if(findCheck.length == 2){
+          		document.form.CB1.checked=true;
+          		StartTime()
+        	}
+      	}
     </script>
-
 </head>
 <style>
 body {
@@ -144,7 +155,7 @@ div#results {
 }
 
 </style>
-<body>
+<body onload="LoadPage()">
     <div id="container">
         <form id="form" name="form" action="/multi" method="post"><center>
 	<div id="logo">{{title}}<br>{{subtitle}}</div>
@@ -164,7 +175,8 @@ div#results {
 		<div style="display:{{b3}}">{{button3}} - {{ value3 }} ({{ value8 }}&#37;) <br></div>
 		<div style="display:{{b4}}">{{button4}} - {{ value4 }} ({{ value9 }}&#37;) <br></div>
 		<div style="display:{{b5}}">{{button5}} - {{ value5 }} ({{ value10 }}&#37;) <br></div>
-	total votes - {{ total }} </div> 
+		total votes - {{ total }} <br>
+	        auto refresh <input type="checkbox" name="CB1" onclick="StartTime()"></div> 
         </form>        
         </div>
     </div>     

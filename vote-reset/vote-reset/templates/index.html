@@ -1,13 +1,25 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='default.css') }}">
+    <link rel="stylesheet" type="text/css" href="/reset{{ url_for('static', filename='default.css') }}">
     <title>{{title}} {{subtitle}}</title>
     <script language="JavaScript">
-	setTimeout(function(){
-        location = ''
-        },1000)
-        function send(form){
+	var asdf = false;
+        function StartTime(){
+        if(asdf)clearTimeout(asdf)
+                asdf = setTimeout("RefreshPage()",1000);
+        }
+        function RefreshPage(){
+                clearTimeout(asdf)
+                if(document.form.CB1.checked)
+                        document.location.href= "reset?autorefresh"
+        }
+        function LoadPage(){
+                var findCheck = document.location.href.split("?auto");
+                if(findCheck.length == 2){
+                        document.form.CB1.checked=true;
+                        StartTime()
+                }
         }
     </script>
 
@@ -110,7 +122,7 @@ div#results {
     color: white;
 }
 </style>
-<body>
+<body onload="LoadPage()">
     <div id="container">
         <form id="form" name="form" action="/reset" method="post"><center>
 	<div id="logo">{{title}}<br>{{subtitle}}</div>
@@ -123,7 +135,8 @@ div#results {
         <div id="space"></div>
 	<div id="results">{{button1}} - {{ value1 }} ({{ value4 }}&#37;) <br>
                           {{button2}} - {{ value2 }} ({{ value5 }}&#37;) <br>
-                          total votes - {{ value3 }} </div>
+                          total votes - {{ value3 }} <br>
+        auto refresh <input type="checkbox" name="CB1" onclick="StartTime()"></div>
         </form>        
         </div>
     </div>     
